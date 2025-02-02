@@ -161,7 +161,7 @@ function Navbar() {
               <UserMenu />
             ) : (
               <Link to="/login" 
-                className="relative inline-flex items-center px-8 py-3 text-lg font-medium
+                className="relative inline-flex items-center px-5 py-3 text-md font-medium
                   bg-gradient-to-r from-cyan-400 to-purple-500 
                   hover:from-purple-500 hover:to-cyan-400
                   text-gray-900 rounded-xl transition-all duration-300
