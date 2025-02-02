@@ -1,0 +1,45 @@
+.footer {
+  background-color: #282c34; /* Dark background color */
+  color: white; /* Text color */
+  padding: 20px; /* Padding around the footer */
+  text-align: center; /* Center the text */
+  position: relative; /* Positioning */
+  bottom: 0; /* Stick to the bottom */
+  width: 100%; /* Full width */
+}
+
+.footer-content {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+}
+
+.developer-name {
+  margin: 0; /* Remove default margin */
+  font-size: 1.2em; /* Font size for developer name */
+}
+
+.social-links {
+  margin-top: 10px; /* Space between name and links */
+}
+
+.social-links a {
+  color: #61dafb; /* Link color */
+  margin: 0 10px; /* Space between links */
+  text-decoration: none; /* Remove underline */
+}
+
+.social-links a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  .footer {
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+
+  .developer-name {
+    font-size: 1em; /* Adjust font size for smaller screens */
+  }
+} 
