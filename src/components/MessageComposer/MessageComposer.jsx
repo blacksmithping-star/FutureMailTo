@@ -436,7 +436,7 @@ function MessageComposer() {
           {currentUser && !isAnony ? (
             <div className="flex items-center mb-10 space-x-2">
               <button
-                onClick={() => setIsUserGhost(!isUserGhost)}
+                onClick={(e) => { e.preventDefault(); setIsUserGhost(!isUserGhost)}}
                 className={`relative w-12 h-6 flex items-center rounded-full transition duration-300 ${isUserGhost ? "bg-gray-600" : "bg-gray-400"
                   }`}
               >
@@ -445,7 +445,7 @@ function MessageComposer() {
                     }`}
                 />
               </button>
-              <span className="text-white">{isUserGhost ? "Send Anonymously" : `Send as ${currentUser?.displayName}`}</span>
+              <span className="text-white text-lg">{isUserGhost ? "Send Anonymously" : `Send as ${currentUser?.displayName}`}</span>
             </div>
           )
             :
