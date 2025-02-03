@@ -4,6 +4,15 @@
 html {
   scroll-behavior: smooth;
 }
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
+
+body {
+  font-family: "Lexend Deca", serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
 
 @layer components {
   .nav-link {

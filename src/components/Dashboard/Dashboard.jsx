@@ -181,13 +181,13 @@ function Dashboard() {
                         <div className="mt-4 flex justify-end">
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="mr-4 px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                                className="mr-4 cursor-pointer px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDeleteEmail}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
+                                className="px-4 cursor-pointer py-2 bg-red-600 text-white rounded-lg hover:bg-red-500"
                             >
                                 Delete
                             </button>

@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const { signInWithGoogle } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  if (currentUser) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);

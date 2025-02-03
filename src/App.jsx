@@ -10,6 +10,7 @@ import Dashboard from './components/Dashboard/Dashboard'
 import Hero from './components/Hero/Hero'
 import About from './components/About/About'
 import MessageSection from './components/MessageSection'
+import SuccessPage from './components/MessageComposer/SuccessPage';
 
 function App() {
   return (
@@ -41,6 +42,10 @@ function App() {
             </div>
           } />
           <Route path="/about" element={<About />} />
+          <Route path="/success" element={<>
+              <Navbar />
+              <SuccessPage />
+            </>} />
         </Routes>
       </AuthProvider>
     </Router>
