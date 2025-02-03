@@ -127,13 +127,13 @@ function Navbar() {
               <UserMenu isMobile={true} /> // Show UserMenu if logged in
             ) : (
               <Link to="/login" 
-                className="relative xs:hidden inline-flex items-center px-4 py-3 text-lg font-medium
+                className="relative inline-flex items-center px-4 py-3 text-lg font-medium
                   bg-gradient-to-r from-cyan-400 to-purple-500 
                   hover:from-purple-500 hover:to-cyan-400
                   text-gray-900 rounded-xl transition-all duration-300
                   hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]
                   active:scale-95">
-                <span className="relative">Get Started</span>
+                <span className="relative">Login</span>
               </Link>
             )}
           </div>
