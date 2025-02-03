@@ -38,16 +38,20 @@ function MessageComposer() {
   const [selectedDate, setSelectedDate] = useState(savedFormData.selectedDate);
   const [customDate, setCustomDate] = useState(savedFormData.customDate);
   const isAnony = currentUser ? currentUser.isAnonymous : false;
+  const [isUserGhost, setIsUserGhost] = useState(false);
+
+
+
   // Calculate minimum and maximum dates
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  
+
   const maxDate = new Date();
   maxDate.setFullYear(maxDate.getFullYear() + 10);
 
   // Generate years array (from next year to 10 years ahead)
   const years = Array.from({ length: 11 }, (_, i) => tomorrow.getFullYear() + i);
-  
+
   // Generate months array
   const months = [
     { value: 1, label: 'January' },
@@ -64,7 +68,7 @@ function MessageComposer() {
     { value: 12, label: 'December' }
   ];
 
- 
+
 
   // Generate days array based on selected month and year
   const getDaysInMonth = (month, year) => {
@@ -83,7 +87,7 @@ function MessageComposer() {
   const handleDateChange = (field, value) => {
     const numValue = value === '' ? '' : Number(value);
     const newDate = { ...customDate, [field]: numValue };
-    
+
     // Only validate day if month is selected
     if (field === 'month' || field === 'year') {
       const daysInMonth = getDaysInMonth(newDate.month, newDate.year);
@@ -91,7 +95,7 @@ function MessageComposer() {
         newDate.day = '';
       }
     }
-    
+
     setCustomDate(newDate);
   };
 
@@ -149,7 +153,7 @@ function MessageComposer() {
     });
   };
 
-  
+
 
   const handleSendToFuture = async () => {
     // Validate form fields
@@ -171,27 +175,33 @@ function MessageComposer() {
 
     // Check if the selected date is today
     if (todayDate === deliveryDate) {
-      toast.error("Please select a date other than today.", { style: {
-        backgroundColor: '#1f2937',
-        color: '#ffffff',
-      }, });
+      toast.error("Please select a date other than today.", {
+        style: {
+          backgroundColor: '#1f2937',
+          color: '#ffffff',
+        },
+      });
       return; // Prevent form submission
     }
     if (!email || !subject || !message || !selectedDate) {
-      toast.error("Please fill in all fields.", { style: {
-        backgroundColor: '#1f2937',
-        color: '#ffffff',
-      }, });
+      toast.error("Please fill in all fields.", {
+        style: {
+          backgroundColor: '#1f2937',
+          color: '#ffffff',
+        },
+      });
       return;
     }
 
     // Validate email format
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-      toast.error("Please enter a valid email address.", {  style: {
-        backgroundColor: '#1f2937',
-        color: '#ffffff',
-      }, });
+      toast.error("Please enter a valid email address.", {
+        style: {
+          backgroundColor: '#1f2937',
+          color: '#ffffff',
+        },
+      });
       return;
     }
 
@@ -211,18 +221,18 @@ function MessageComposer() {
       });
       return;
     }
-  
+
     // Prepare the email data
     const emailData = {
       to: email,
       from: isAnony ? currentUser.uid : currentUser.email,
-      username: isAnony ? "Anonymous User" : currentUser.displayName,
+      username: isAnony || isUserGhost ? "Anonymous User" : currentUser.displayName,
       subject: subject,
       body: message,
       status: "scheduled",
       sendAt: new Date(getDeliveryDate()).toISOString() // Convert delivery date to ISO string
     };
-  
+
     try {
       // Store the email data in Firestore
       const emailsCollection = collection(db, 'emails');
@@ -245,23 +255,25 @@ function MessageComposer() {
 
     } catch (error) {
       console.error("Error storing email: ", error);
-      toast.error("Error in Spaceship. Please try again.", {  style: {
-        backgroundColor: '#1f2937',
-        color: '#ffffff',
-      }, });
+      toast.error("Error in Spaceship. Please try again.", {
+        style: {
+          backgroundColor: '#1f2937',
+          color: '#ffffff',
+        },
+      });
     }
   };
 
   return (
     <div id='letter' className="relative max-w-5xl mx-auto px-4">
-      <ToastContainer position="bottom-right"/>
+      <ToastContainer position="bottom-right" />
       <div className="text-center mb-12">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
           Write Letter to Future
         </h1>
-        
+
         <p className="text-gray-400 text-xl md:text-2xl">
-        <b>Write.</b> Pick a receiving date. <b>Send.</b> Thats It.
+          <b>Write.</b> Pick a receiving date. <b>Send.</b> Thats It.
         </p>
       </div>
 
@@ -309,8 +321,8 @@ function MessageComposer() {
                   title="Reset to default subject"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                     />
                   </svg>
                 </button>
@@ -412,7 +424,7 @@ function MessageComposer() {
           <div className="mb-10 p-6 bg-gray-900 rounded-xl border border-gray-700">
             <div className="flex items-center text-gray-300">
               <svg className="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span className="text-lg">
@@ -421,8 +433,28 @@ function MessageComposer() {
             </div>
           </div>
 
+          {currentUser && !isAnony ? (
+            <div className="flex items-center mb-10 space-x-2">
+              <button
+                onClick={() => setIsUserGhost(!isUserGhost)}
+                className={`relative w-12 h-6 flex items-center rounded-full transition duration-300 ${isUserGhost ? "bg-gray-600" : "bg-gray-400"
+                  }`}
+              >
+                <div
+                  className={`absolute w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 transform ${isUserGhost ? "translate-x-6" : "translate-x-1"
+                    }`}
+                />
+              </button>
+              <span className="text-white">{isUserGhost ? "Send Anonymously" : `Send as ${currentUser?.displayName}`}</span>
+            </div>
+          )
+            :
+            (<></>)
+
+          }
+
           {/* Send Button */}
-          <button 
+          <button
             type="submit"
             className="w-full group cursor-pointer relative inline-flex items-center justify-center px-8 py-5 text-xl font-medium
               bg-gradient-to-r from-cyan-400 to-purple-500 
@@ -438,13 +470,13 @@ function MessageComposer() {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" 
-              fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
+              <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             )}
-            
+
           </button>
         </form>
       </div>

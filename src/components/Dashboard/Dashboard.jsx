@@ -177,8 +177,8 @@ function Dashboard() {
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-opacity-00">
                     <div className="bg-white rounded-lg p-6 shadow-lg">
-                        <h2 className="text-lg font-bold mb-4">Are you sure?</h2>
-                        <p>This action cannot be undone.</p>
+                        <h2 className="text-lg font-bold mb-4">Deleting message will cancel the process.</h2>
+                        <p>Are you sure?</p>
                         <div className="mt-4 flex justify-end">
                             <button
                                 onClick={() => setIsModalOpen(false)}
