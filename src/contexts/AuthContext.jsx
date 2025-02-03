@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { auth, googleProvider } from '../config/firebase';
-import { signInWithPopup, signOut } from 'firebase/auth';
+import { signInWithPopup, signInAnonymously, signOut } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -22,12 +22,15 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const deleteUserAccount = async () => {
-    const user = auth.currentUser;
-    if (user) {
-      await user.delete();
+  async function signInAnonymous() {
+    try {
+      const result = await signInAnonymously(auth, googleProvider);
+      return result.user;
+    } catch (error) {
+      console.error('Error during anonymous sign in:', error);
+      throw error;
     }
-  };
+  }
 
   async function logout() {
     try {
@@ -51,7 +54,7 @@ export function AuthProvider({ children }) {
     currentUser,
     signInWithGoogle,
     logout,
-    deleteUserAccount
+    signInAnonymous
   };
 
   return (

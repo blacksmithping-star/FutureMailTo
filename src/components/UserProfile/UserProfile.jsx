@@ -6,10 +6,11 @@ import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { Navigate } from 'react-router-dom';
 
 function UserProfile() {
-  const { currentUser, deleteUserAccount } = useAuth();
+  const { currentUser} = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isReauthModalOpen, setIsReauthModalOpen] = useState(false);
   const [password, setPassword] = useState('');
+  const isAnony = currentUser ? currentUser.isAnonymous : false;
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
@@ -50,15 +51,15 @@ function UserProfile() {
         <div className="bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-700">
           <div className="flex flex-col items-center">
             <img 
-              src={currentUser.photoURL}
+              src={isAnony ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTelZ7W2tOs5kd_GIOw595myZLLf4KBda-Q5w&s" : currentUser.photoURL}
               alt={currentUser.displayName}
               className="w-32 h-32 rounded-full border-4 border-purple-500 shadow-xl"
             />
             <h1 className="mt-6 text-3xl font-bold text-gray-200">
-              {currentUser.displayName}
+            {isAnony ? "Anonymous User" : currentUser.displayName}
             </h1>
             <p className="mt-2 text-gray-400">
-              {currentUser.email}
+              {isAnony ? currentUser.uid : currentUser.email}
             </p>
             {/* <button
               onClick={() => setIsReauthModalOpen(true)}

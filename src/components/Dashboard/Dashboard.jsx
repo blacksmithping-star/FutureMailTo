@@ -10,6 +10,7 @@ function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [emailToDelete, setEmailToDelete] = useState(null);
+    const isAnony = currentUser ? currentUser.isAnonymous : false;
 
     if (!currentUser) {
         return <Navigate to="/login" replace />;
@@ -21,7 +22,7 @@ function Dashboard() {
 
             try {
                 const emailsCollection = collection(db, 'emails');
-                const q = query(emailsCollection, where("from", "==", currentUser.email)); // Fetch emails sent to the current user
+                const q = query(emailsCollection, where("from", "==", isAnony ? currentUser.uid : currentUser.email)); // Fetch emails sent from the current user
                 const querySnapshot = await getDocs(q);
                 
                 const fetchedEmails = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

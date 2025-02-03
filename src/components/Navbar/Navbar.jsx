@@ -10,7 +10,8 @@ function Navbar() {
   
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
-  
+  const isAnony = currentUser ? currentUser.isAnonymous : false;
+
   const desktopUserMenuRef = useRef();
   const mobileUserMenuRef = useRef();
 
@@ -61,8 +62,8 @@ function Navbar() {
           className="flex cursor-pointer items-center space-x-3 focus:outline-none"
         >
           <img 
-            src={currentUser.photoURL}
-            alt={currentUser.displayName}
+              src={isAnony ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTelZ7W2tOs5kd_GIOw595myZLLf4KBda-Q5w&s" : currentUser.photoURL}
+              alt={currentUser.displayName}
             className="w-10 h-10 rounded-full border-2 border-purple-500"
           />
           <svg className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 

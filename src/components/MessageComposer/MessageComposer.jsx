@@ -37,7 +37,7 @@ function MessageComposer() {
   const [message, setMessage] = useState(savedFormData.message);
   const [selectedDate, setSelectedDate] = useState(savedFormData.selectedDate);
   const [customDate, setCustomDate] = useState(savedFormData.customDate);
-
+  const isAnony = currentUser ? currentUser.isAnonymous : false;
   // Calculate minimum and maximum dates
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -215,8 +215,8 @@ function MessageComposer() {
     // Prepare the email data
     const emailData = {
       to: email,
-      from: currentUser.email,
-      username: currentUser.displayName || currentUser.email,
+      from: isAnony ? currentUser.uid : currentUser.email,
+      username: isAnony ? "Anonymous User" : currentUser.displayName,
       subject: subject,
       body: message,
       status: "scheduled",
@@ -241,7 +241,7 @@ function MessageComposer() {
       //   backgroundColor: '#1f2937',
       //   color: '#ffffff',
       // }, });
-      window.location.href = '/success';
+      navigate('/success');
 
     } catch (error) {
       console.error("Error storing email: ", error);
