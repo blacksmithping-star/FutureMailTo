@@ -3,7 +3,10 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 function Login() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading1, setIsLoading1] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
+
+
   const { signInWithGoogle } = useAuth();
   const { currentUser } = useAuth();
   const { signInAnonymous } = useAuth();
@@ -15,7 +18,7 @@ function Login() {
   }
 
   const handleAnonymousSignIn = async () => {
-    setIsLoading(true);
+    setIsLoading1(true);
     try {
       await signInAnonymous();
       if (location.state?.from) {
@@ -28,12 +31,12 @@ function Login() {
     } catch (error) {
       console.error('Sign in failed:', error);
     } finally {
-      setIsLoading(false);
+      setIsLoading1(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsLoading2(true);
     try {
       await signInWithGoogle();
       // Redirect back to the previous page with saved form data
@@ -47,7 +50,7 @@ function Login() {
     } catch (error) {
       console.error("Error signing in:", error);
     } finally {
-      setIsLoading(false);
+      setIsLoading2(false);
     }
   };
 
@@ -76,7 +79,7 @@ function Login() {
           {/* Google Sign In Button */}
           <button
             onClick={handleGoogleSignIn}
-            disabled={isLoading}
+            disabled={isLoading2}
             className="w-full cursor-pointer flex items-center justify-center px-8 py-4 border border-gray-700 rounded-xl
               text-lg font-medium text-gray-200 bg-gray-900
               hover:bg-gray-700 hover:border-gray-600
@@ -84,7 +87,7 @@ function Login() {
               transition-all duration-300 relative group
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {!isLoading && (
+            {!isLoading2 && (
               <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
@@ -108,7 +111,7 @@ function Login() {
                 />
               </svg>
             )}
-            {isLoading ? (
+            {isLoading2 ? (
               <svg className="animate-spin h-5 w-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -120,7 +123,7 @@ function Login() {
 
           <button
             onClick={handleAnonymousSignIn}
-            disabled={isLoading}
+            disabled={isLoading1}
             className="w-full cursor-pointer mt-2 flex items-center justify-center px-8 py-4 border border-gray-700 rounded-xl
               text-lg font-medium text-gray-200 bg-gray-900
               hover:bg-gray-700 hover:border-gray-600
@@ -128,10 +131,10 @@ function Login() {
               transition-all duration-300 relative group
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {!isLoading && (
+            {!isLoading1 && (
               <p className='text-xl mr-3'>👻</p>
             )}
-            {isLoading ? (
+            {isLoading1 ? (
               <svg className="animate-spin h-5 w-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
