@@ -12,7 +12,7 @@ function Features() {
     },
     {
       title: "100% Free",
-      description: "Write and receive letters at no cost, with unlimited storage.",
+      description: "Write and receive letters at no cost, with unlimited storage and fun.",
       icon: "✨"
     }
   ];
