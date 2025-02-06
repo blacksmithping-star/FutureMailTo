@@ -1,3 +1,6 @@
+## 🚀 Open-Source Project  
+This project is open-source and welcomes contributions! Feel free to explore, use, and contribute.  
+ 
 # ![Project Image](https://github.com/user-attachments/assets/11f93584-5133-4610-8c78-d3ca6c35fd4e)
 
 # FutureMailTo
@@ -23,6 +26,13 @@ Life is fleeting. Imagine someone opening your email in 2035, long after you're 
 3. Hit send.
 
 Your email time-travels silently until its moment arrives.
+
+## 🤝 Contributing  
+To contribute:  
+1. Fork the repository  
+2. Create a new branch (`git checkout -b feature-branch`)  
+3. Make changes and commit (`git commit -m "Added a new feature"`)  
+4. Push to your fork and create a Pull Request  
 
 ## Setup
 To get started with the project, follow these steps:
