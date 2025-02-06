@@ -82,7 +82,7 @@ function Navbar() {
                 setIsOpen(false);
               }}
             >
-              Dashboard
+              My Emails
             </Link>
             <Link
               to="/profile"

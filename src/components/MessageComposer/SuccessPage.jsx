@@ -12,7 +12,7 @@ function SuccessPage() {
   return (
     <div className="min-h-screen bg-gray-900 pt-40">
       <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-700">
+        <div className="bg-gray-800 rounded-2xl p-8 shadow-xl border border-4 border-gray-700">
           <div className="flex flex-col items-center">
             <img 
               src="https://media.tenor.com/WsmiS-hUZkEAAAAj/verify.gif"
@@ -25,7 +25,7 @@ function SuccessPage() {
                   text-white rounded-xl transition-all duration-300
                   hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]
                   active:scale-95">
-                <span className="relative">Back to Home</span>
+                <span className="relative">Send Another 👍</span>
               </Link>
           </div>
         </div>
