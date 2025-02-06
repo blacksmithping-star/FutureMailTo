@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { db } from '../../config/firebase';
 import { collection, addDoc } from "firebase/firestore";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 function MessageComposer() {
   const { currentUser } = useAuth();
@@ -19,18 +18,23 @@ function MessageComposer() {
     day: 'numeric'
   })}`;
 
-  // Get saved form data from location state or use defaults
-  const savedFormData = location.state?.formData || {
+  // Check for saved form data from location.state or sessionStorage
+  const storedFormData = sessionStorage.getItem('formData');
+  const parsedFormData = storedFormData ? JSON.parse(storedFormData) : null;
+  const savedFormData = location.state?.formData || parsedFormData || {
     email: '',
     subject: defaultSubject,
     message: '',
     selectedDate: 'tomorrow',
-    customDate: {
-      month: '',
-      day: '',
-      year: ''
-    }
+    customDate: { month: '', day: '', year: '' }
   };
+
+  // Clear session storage if form data was loaded from there
+  // useEffect(() => {
+  //   if (parsedFormData) {
+  //     sessionStorage.removeItem('formData');
+  //   }
+  // }, [parsedFormData]);
 
   const [email, setEmail] = useState(savedFormData.email);
   const [subject, setSubject] = useState(savedFormData.subject);
@@ -39,8 +43,6 @@ function MessageComposer() {
   const [customDate, setCustomDate] = useState(savedFormData.customDate);
   const isAnony = currentUser ? currentUser.isAnonymous : false;
   const [isUserGhost, setIsUserGhost] = useState(false);
-
-
 
   // Calculate minimum and maximum dates
   const tomorrow = new Date();
@@ -68,17 +70,12 @@ function MessageComposer() {
     { value: 12, label: 'December' }
   ];
 
-
-
   // Generate days array based on selected month and year
   const getDaysInMonth = (month, year) => {
     if (!month) return Array.from({ length: 31 }, (_, i) => i + 1); // Show all possible days if no month selected
     const numMonth = Number(month);
     const numYear = year ? Number(year) : new Date().getFullYear();
-    return Array.from(
-      { length: new Date(numYear, numMonth, 0).getDate() },
-      (_, i) => i + 1
-    );
+    return Array.from({ length: new Date(numYear, numMonth, 0).getDate() }, (_, i) => i + 1);
   };
 
   const days = getDaysInMonth(customDate.month, customDate.year);
@@ -153,10 +150,10 @@ function MessageComposer() {
     });
   };
 
-
+  
+  
 
   const handleSendToFuture = async () => {
-    // Validate form fields
     setIsLoading(true);
     const today = new Date();
     const todayDate = today.toLocaleDateString('en-US', {
@@ -170,26 +167,20 @@ function MessageComposer() {
       day: '2-digit'
     });
 
-    //console.log(new Date(getDeliveryDate()).toDateString());
-    //console.log(today);
-
-    // Check if the selected date is today
     if (todayDate === deliveryDate) {
       toast.error("Please select a date other than today.", {
-        style: {
-          backgroundColor: '#1f2937',
-          color: '#ffffff',
-        },
+        style: { backgroundColor: '#1f2937', color: '#ffffff' },
       });
-      return; // Prevent form submission
+      setIsLoading(false);
+      return;
     }
+
+
     if (!email || !subject || !message || !selectedDate) {
       toast.error("Please fill in all fields.", {
-        style: {
-          backgroundColor: '#1f2937',
-          color: '#ffffff',
-        },
+        style: { backgroundColor: '#1f2937', color: '#ffffff' },
       });
+      setIsLoading(false);
       return;
     }
 
@@ -197,28 +188,23 @@ function MessageComposer() {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
       toast.error("Please enter a valid email address.", {
-        style: {
-          backgroundColor: '#1f2937',
-          color: '#ffffff',
-        },
+        style: { backgroundColor: '#1f2937', color: '#ffffff' },
       });
+      setIsLoading(false);
       return;
     }
 
     if (!currentUser) {
-      // Save current form state and redirect to login
+      // Save current form state to sessionStorage and redirect to login
+      const formData = { email, subject, message, selectedDate, customDate };
+      sessionStorage.setItem('formData', JSON.stringify(formData));
+
       navigate('/login', {
         state: {
-          from: location.pathname,
-          formData: {
-            email,
-            subject,
-            message,
-            selectedDate,
-            customDate
-          }
+          from: location.pathname
         }
       });
+      setIsLoading(false);
       return;
     }
 
@@ -230,15 +216,12 @@ function MessageComposer() {
       subject: subject,
       body: message,
       status: "scheduled",
-      sendAt: new Date(getDeliveryDate()).toISOString() // Convert delivery date to ISO string
+      sendAt: new Date(getDeliveryDate()).toISOString()
     };
 
     try {
-      // Store the email data in Firestore
       const emailsCollection = collection(db, 'emails');
       await addDoc(emailsCollection, emailData);
-      console.log("Email stored successfully!");
-
       // Clear the form fields
       setEmail('');
       setSubject(defaultSubject);
@@ -246,21 +229,14 @@ function MessageComposer() {
       setSelectedDate('tomorrow');
       setCustomDate({ month: '', day: '', year: '' });
       setIsLoading(false);
-      // // Show success toast
-      // toast.success("Letter started time travelling!", {  style: {
-      //   backgroundColor: '#1f2937',
-      //   color: '#ffffff',
-      // }, });
       navigate('/success');
-
+      sessionStorage.removeItem('formData');
     } catch (error) {
       console.error("Error storing email: ", error);
       toast.error("Error in Spaceship. Please try again.", {
-        style: {
-          backgroundColor: '#1f2937',
-          color: '#ffffff',
-        },
+        style: { backgroundColor: '#1f2937', color: '#ffffff' },
       });
+      setIsLoading(false);
     }
   };
 
@@ -271,9 +247,8 @@ function MessageComposer() {
         <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
           Write Letter to Future
         </h1>
-
         <p className="text-gray-400 text-xl md:text-2xl">
-          <b>Write.</b> Pick a receiving date. <b>Send.</b> Thats It.
+          <b>Write.</b> Pick a receiving date. <b>Send.</b> That's It.
         </p>
       </div>
 
@@ -291,8 +266,8 @@ function MessageComposer() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                placeholder-gray-500"
+                     focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                     placeholder-gray-500"
               placeholder="To whom you want to send the letter"
             />
           </div>
@@ -309,15 +284,15 @@ function MessageComposer() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                  focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                  placeholder-gray-500"
+                       focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                       placeholder-gray-500"
                 placeholder="Enter email subject"
               />
               {subject !== defaultSubject && (
                 <button
                   onClick={(e) => { e.preventDefault(); setSubject(defaultSubject); }}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200
-                    p-2 rounded-lg hover:bg-gray-800 transition-all duration-300"
+                           p-2 rounded-lg hover:bg-gray-800 transition-all duration-300"
                   title="Reset to default subject"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -341,8 +316,8 @@ function MessageComposer() {
               onChange={(e) => setMessage(e.target.value)}
               rows="6"
               className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                placeholder-gray-500 resize-none"
+                     focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                     placeholder-gray-500 resize-none"
               placeholder="Dear Senorita..."
             />
           </div>
@@ -354,12 +329,18 @@ function MessageComposer() {
               {deliveryOptions.map((option) => (
                 <button
                   key={option.id}
-                  onClick={(e) => { e.preventDefault(); setSelectedDate(option.id); if (option.id !== 'custom') { setCustomDate({ month: '', day: '', year: '' }); } }}
+                  onClick={(e) => { 
+                    e.preventDefault(); 
+                    setSelectedDate(option.id); 
+                    if (option.id !== 'custom') { 
+                      setCustomDate({ month: '', day: '', year: '' }); 
+                    } 
+                  }}
                   className={`px-4 cursor-pointer py-3 rounded-lg text-lg font-medium transition-all duration-300
-                    ${selectedDate === option.id
-                      ? 'bg-gradient-to-r from-cyan-400 to-purple-500 text-gray-900'
-                      : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
-                    }`}
+                      ${selectedDate === option.id
+                        ? 'bg-gradient-to-r from-cyan-400 to-purple-500 text-gray-900'
+                        : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
+                      }`}
                 >
                   {option.label}
                 </button>
@@ -374,8 +355,8 @@ function MessageComposer() {
                   value={customDate.month}
                   onChange={(e) => handleDateChange('month', e.target.value)}
                   className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                    focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                    appearance-none cursor-pointer hover:bg-gray-800"
+                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                         appearance-none cursor-pointer hover:bg-gray-800"
                 >
                   <option value="">Month</option>
                   {months.map((month) => (
@@ -390,8 +371,8 @@ function MessageComposer() {
                   value={customDate.day}
                   onChange={(e) => handleDateChange('day', e.target.value)}
                   className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                    focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                    appearance-none cursor-pointer hover:bg-gray-800"
+                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                         appearance-none cursor-pointer hover:bg-gray-800"
                 >
                   <option value="">Day</option>
                   {days.map((day) => (
@@ -406,8 +387,8 @@ function MessageComposer() {
                   value={customDate.year}
                   onChange={(e) => handleDateChange('year', e.target.value)}
                   className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                    focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                    appearance-none cursor-pointer hover:bg-gray-800"
+                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                         appearance-none cursor-pointer hover:bg-gray-800"
                 >
                   <option value="">Year</option>
                   {years.map((year) => (
@@ -436,32 +417,26 @@ function MessageComposer() {
           {currentUser && !isAnony ? (
             <div className="flex items-center mb-10 space-x-2">
               <button
-                onClick={(e) => { e.preventDefault(); setIsUserGhost(!isUserGhost)}}
-                className={`relative w-12 h-6 flex items-center rounded-full transition duration-300 ${isUserGhost ? "bg-gray-600" : "bg-gray-400"
-                  }`}
+                onClick={(e) => { e.preventDefault(); setIsUserGhost(!isUserGhost) }}
+                className={`relative w-12 h-6 flex items-center rounded-full transition duration-300 ${isUserGhost ? "bg-gray-600" : "bg-gray-400"}`}
               >
                 <div
-                  className={`absolute w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 transform ${isUserGhost ? "translate-x-6" : "translate-x-1"
-                    }`}
+                  className={`absolute w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 transform ${isUserGhost ? "translate-x-6" : "translate-x-1"}`}
                 />
               </button>
               <span className="text-white text-lg">{isUserGhost ? "Send Anonymously" : `Send as ${currentUser?.displayName}`}</span>
             </div>
-          )
-            :
-            (<></>)
-
-          }
+          ) : (<></>)}
 
           {/* Send Button */}
           <button
             type="submit"
             className="w-full group cursor-pointer relative inline-flex items-center justify-center px-8 py-5 text-xl font-medium
-              bg-gradient-to-r from-cyan-400 to-purple-500 
-              hover:from-purple-500 hover:to-cyan-400
-              text-gray-900 rounded-xl transition-all duration-300
-              hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]
-              active:scale-95"
+                   bg-gradient-to-r from-cyan-400 to-purple-500 
+                   hover:from-purple-500 hover:to-cyan-400
+                   text-gray-900 rounded-xl transition-all duration-300
+                   hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]
+                   active:scale-95"
           >
             <span className="relative">Send to the Future</span>
             {isLoading ? (
@@ -471,12 +446,11 @@ function MessageComposer() {
               </svg>
             ) : (
               <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             )}
-
           </button>
         </form>
       </div>
@@ -484,4 +458,4 @@ function MessageComposer() {
   );
 }
 
-export default MessageComposer; 
+export default MessageComposer;

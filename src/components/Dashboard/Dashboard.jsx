@@ -45,7 +45,6 @@ function Dashboard() {
             try {
                 await deleteDoc(doc(db, 'emails', emailToDelete)); // Delete the email from Firestore
                 setEmails(emails.filter(email => email.id !== emailToDelete)); // Update local state
-                console.log("Email deleted successfully!");
             } catch (error) {
                 console.error("Error deleting email: ", error);
             } finally {
