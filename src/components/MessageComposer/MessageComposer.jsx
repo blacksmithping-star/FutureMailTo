@@ -18,8 +18,8 @@ function MessageComposer() {
     day: 'numeric'
   })}`;
 
-  // Check for saved form data from location.state or sessionStorage
-  const storedFormData = sessionStorage.getItem('formData');
+  // Check for saved form data from location.state or localStorage
+  const storedFormData = localStorage.getItem('formData');
   const parsedFormData = storedFormData ? JSON.parse(storedFormData) : null;
   const savedFormData = location.state?.formData || parsedFormData || {
     email: '',
@@ -32,7 +32,7 @@ function MessageComposer() {
   // Clear session storage if form data was loaded from there
   // useEffect(() => {
   //   if (parsedFormData) {
-  //     sessionStorage.removeItem('formData');
+  //     localStorage.removeItem('formData');
   //   }
   // }, [parsedFormData]);
 
@@ -195,9 +195,9 @@ function MessageComposer() {
     }
 
     if (!currentUser) {
-      // Save current form state to sessionStorage and redirect to login
+      // Save current form state to localStorage and redirect to login
       const formData = { email, subject, message, selectedDate, customDate };
-      sessionStorage.setItem('formData', JSON.stringify(formData));
+      localStorage.setItem('formData', JSON.stringify(formData));
 
       navigate('/login', {
         state: {
@@ -222,6 +222,7 @@ function MessageComposer() {
     try {
       const emailsCollection = collection(db, 'emails');
       await addDoc(emailsCollection, emailData);
+
       // Clear the form fields
       setEmail('');
       setSubject(defaultSubject);
@@ -230,7 +231,7 @@ function MessageComposer() {
       setCustomDate({ month: '', day: '', year: '' });
       setIsLoading(false);
       navigate('/success');
-      sessionStorage.removeItem('formData');
+      localStorage.removeItem('formData');
     } catch (error) {
       console.error("Error storing email: ", error);
       toast.error("Error in Spaceship. Please try again.", {
