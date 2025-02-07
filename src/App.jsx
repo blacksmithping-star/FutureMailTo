@@ -11,6 +11,7 @@ import Hero from './components/Hero/Hero'
 import About from './components/About/About'
 import MessageSection from './components/MessageSection'
 import SuccessPage from './components/MessageComposer/SuccessPage';
+import AdminDashboard from './components/Admin/AdminDashboard';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
               </div>
             </div>
           } />
+          <Route path="/admin" element={<><Navbar /><AdminDashboard /></>} />
           <Route path="/about" element={<About />} />
           <Route path="/success" element={<>
               <Navbar />
