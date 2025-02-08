@@ -265,8 +265,8 @@ function MessageComposer() {
         </p>
       </div>
 
-      <div className="relative bg-gray-800 rounded-3xl p-10 shadow-xl border-5 border-dashed border-purple-700">
-        <form onSubmit={(e) => { e.preventDefault(); handleSendToFuture(); }}>
+      <div className="card relative bg-gray-800 mb-10 rounded-3xl p-10 shadow-xl border border-gray-800">
+        <form className='z-1' onSubmit={(e) => { e.preventDefault(); handleSendToFuture(); }}>
           {/* Email Input */}
           <div className="mb-8">
             <label htmlFor="email" className="block text-gray-300 mb-3 text-lg font-medium">
