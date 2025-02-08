@@ -43,7 +43,7 @@ function Navbar() {
       setIsDesktopUserMenuOpen(false);
       setIsMobileUserMenuOpen(false);
       setIsMobileMenuOpen(false);
-      localStorage.removeItem('formData');
+      sessionStorage.removeItem('formData');
       navigate('/');
       window.location.reload();
     } catch (error) {
