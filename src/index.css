@@ -127,8 +127,8 @@ textarea::-webkit-scrollbar-thumb:hover {
   place-content: center;
   place-items: center;
   overflow: hidden;
-  box-shadow: 15px 15px 30px #101c2d,
-             -15px -15px 30px #101c2d;
+  box-shadow: 15px 15px 30px #00032e,
+             -15px -15px 30px #00032e;
 }
 
 .card::before {
