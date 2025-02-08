@@ -43,7 +43,9 @@ function Navbar() {
       setIsDesktopUserMenuOpen(false);
       setIsMobileUserMenuOpen(false);
       setIsMobileMenuOpen(false);
+      localStorage.removeItem('formData');
       navigate('/');
+      window.location.reload();
     } catch (error) {
       console.error("Error logging out:", error);
     }

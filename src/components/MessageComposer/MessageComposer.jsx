@@ -11,6 +11,7 @@ function MessageComposer() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSecondStep, setIsSecondStep] = useState(false);
 
   const defaultSubject = `An email from ${new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -29,12 +30,11 @@ function MessageComposer() {
     customDate: { month: '', day: '', year: '' }
   };
 
-  // Clear session storage if form data was loaded from there
   // useEffect(() => {
-  //   if (parsedFormData) {
+  //   if (!currentUser) {
   //     localStorage.removeItem('formData');
   //   }
-  // }, [parsedFormData]);
+  // }, [currentUser]);
 
   const [email, setEmail] = useState(savedFormData.email);
   const [subject, setSubject] = useState(savedFormData.subject);
@@ -153,17 +153,23 @@ function MessageComposer() {
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       e.preventDefault();
-      e.returnValue = ''; 
+      e.returnValue = '';
       return '';
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-    
+
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
-  
+
+  useEffect(() => {
+    if (localStorage.getItem('formData') !== null) {
+      setIsSecondStep(true);
+    }
+  }, [location.state]);
+
 
   const handleSendToFuture = async () => {
     setIsLoading(true);
@@ -213,7 +219,7 @@ function MessageComposer() {
 
       navigate('/login', {
         state: {
-          from: location.pathname
+          from: location.pathname,
         }
       });
       setIsLoading(false);
@@ -242,6 +248,7 @@ function MessageComposer() {
       setSelectedDate('tomorrow');
       setCustomDate({ month: '', day: '', year: '' });
       setIsLoading(false);
+      window.scrollTo(0, 0);
       navigate('/success');
       localStorage.removeItem('formData');
     } catch (error) {
@@ -266,205 +273,256 @@ function MessageComposer() {
       </div>
 
       <div className="card relative bg-gray-800 mb-10 rounded-3xl p-10 shadow-xl border border-gray-800">
-        <form className='z-1' onSubmit={(e) => { e.preventDefault(); handleSendToFuture(); }}>
-          {/* Email Input */}
-          <div className="mb-8">
-            <label htmlFor="email" className="block text-gray-300 mb-3 text-lg font-medium">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                     focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                     placeholder-gray-500"
-              placeholder="To whom you want to send the letter"
-            />
-          </div>
-
-          {/* Subject Input */}
-          <div className="mb-8">
-            <label htmlFor="subject" className="block text-gray-300 mb-3 text-lg font-medium">
-              Subject
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                id="subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                       focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                       placeholder-gray-500"
-                placeholder="Enter email subject"
-              />
-              {subject !== defaultSubject && (
-                <button
-                  onClick={(e) => { e.preventDefault(); setSubject(defaultSubject); }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200
-                           p-2 rounded-lg hover:bg-gray-800 transition-all duration-300"
-                  title="Reset to default subject"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Message Textarea */}
-          <div className="mb-8">
-            <label htmlFor="message" className="block text-gray-300 mb-3 text-lg font-medium">
-              Write Message
-            </label>
-            <textarea
-              id="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows="6"
-              className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                     focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                     placeholder-gray-500 resize-none"
-              placeholder="Dear Senorita..."
-            />
-          </div>
-
-          {/* Delivery Options */}
-          <div className="mb-10">
-            <h3 className="text-gray-300 mb-5 text-lg font-medium">Deliver in</h3>
-            <div className="flex flex-wrap gap-4 mb-6">
-              {deliveryOptions.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={(e) => { 
-                    e.preventDefault(); 
-                    setSelectedDate(option.id); 
-                    if (option.id !== 'custom') { 
-                      setCustomDate({ month: '', day: '', year: '' }); 
-                    } 
-                  }}
-                  className={`px-4 cursor-pointer py-3 rounded-lg text-lg font-medium transition-all duration-300
-                      ${selectedDate === option.id
-                        ? 'bg-gradient-to-r from-cyan-400 to-purple-500 text-gray-900'
-                        : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
-                      }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Custom Date Dropdowns */}
-            {selectedDate === 'custom' && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Month Select */}
-                <select
-                  value={customDate.month}
-                  onChange={(e) => handleDateChange('month', e.target.value)}
-                  className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+        <form className='z-1' onSubmit={(e) => { e.preventDefault(); isSecondStep ? handleSendToFuture() : setIsSecondStep(true); }}>
+          {/* Step 1: Email, Subject, and Message */}
+          {!isSecondStep && (
+            <>
+              {/* Email Input */}
+              <div className="mb-8">
+                <label htmlFor="email" className="block text-gray-300 mb-3 text-lg font-medium">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
                          focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                         appearance-none cursor-pointer hover:bg-gray-800"
-                >
-                  <option value="">Month</option>
-                  {months.map((month) => (
-                    <option key={month.value} value={month.value}>
-                      {month.label}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Day Select */}
-                <select
-                  value={customDate.day}
-                  onChange={(e) => handleDateChange('day', e.target.value)}
-                  className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                         appearance-none cursor-pointer hover:bg-gray-800"
-                >
-                  <option value="">Day</option>
-                  {days.map((day) => (
-                    <option key={day} value={day}>
-                      {day}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Year Select */}
-                <select
-                  value={customDate.year}
-                  onChange={(e) => handleDateChange('year', e.target.value)}
-                  className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                         appearance-none cursor-pointer hover:bg-gray-800"
-                >
-                  <option value="">Year</option>
-                  {years.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-
-          {/* Delivery Date Display */}
-          <div className="mb-10 p-6 bg-gray-900 rounded-xl border border-gray-700">
-            <div className="flex items-center text-gray-300">
-              <svg className="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span className="text-lg">
-                Delivery Date: {getDeliveryDate()}
-              </span>
-            </div>
-          </div>
-
-          {currentUser && !isAnony ? (
-            <div className="flex items-center mb-10 space-x-2">
-              <button
-                onClick={(e) => { e.preventDefault(); setIsUserGhost(!isUserGhost) }}
-                className={`relative w-12 h-6 flex items-center rounded-full transition duration-300 ${isUserGhost ? "bg-gray-600" : "bg-gray-400"}`}
-              >
-                <div
-                  className={`absolute w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 transform ${isUserGhost ? "translate-x-6" : "translate-x-1"}`}
+                         placeholder-gray-500"
+                  placeholder="To whom you want to send the letter"
                 />
-              </button>
-              <span className="text-white text-lg">{isUserGhost ? "Send Anonymously" : `Send as ${currentUser?.displayName}`}</span>
-            </div>
-          ) : (<></>)}
+              </div>
 
-          {/* Send Button */}
-          <button
-            type="submit"
-            className="w-full group cursor-pointer relative inline-flex items-center justify-center px-8 py-5 text-xl font-medium
-                   bg-gradient-to-r from-cyan-400 to-purple-500 
-                   hover:from-purple-500 hover:to-cyan-400
-                   text-gray-900 rounded-xl transition-all duration-300
-                   hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]
-                   active:scale-95"
-          >
-            <span className="relative">Send to the Future</span>
-            {isLoading ? (
-              <svg className="animate-spin ml-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1"
-                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              {/* Subject Input */}
+              <div className="mb-8">
+                <label htmlFor="subject" className="block text-gray-300 mb-3 text-lg font-medium">
+                  Subject
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+                           focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                           placeholder-gray-500"
+                    placeholder="Enter email subject"
+                  />
+                  {subject !== defaultSubject && (
+                    <button
+                      onClick={(e) => { e.preventDefault(); setSubject(defaultSubject); }}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200
+                               p-2 rounded-lg hover:bg-gray-800 transition-all duration-300"
+                      title="Reset to default subject"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Message Textarea */}
+              <div className="mb-8">
+                <label htmlFor="message" className="block text-gray-300 mb-3 text-lg font-medium">
+                  Write Message
+                </label>
+                <textarea
+                  id="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  rows="6"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                         placeholder-gray-500 resize-none"
+                  placeholder="Dear Senorita..."
+                />
+              </div>
+
+              {/* Next Button */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Email validation pattern
+                  if (!email || !subject || !message || !emailPattern.test(email)) {
+                    toast.error("Please fill in all fields.", {
+                      style: { backgroundColor: '#1f2937', color: '#ffffff' },
+                    });
+                  } else {
+                    setIsSecondStep(true);
+                    window.scrollTo(0, 0);
+                  }
+                }}
+                className="w-full group cursor-pointer relative inline-flex items-center justify-center px-8 py-5 text-xl font-medium
+                       bg-gradient-to-r from-cyan-400 to-purple-500 
+                       hover:from-purple-500 hover:to-cyan-400
+                       text-gray-900 rounded-xl transition-all duration-300
+                       hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]
+                       active:scale-95"
+              >
+                <span className="relative">Next Step</span>
+                <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </button>
+            </>
+          )}
+
+          {/* Step 2: Delivery Options and Date Selection */}
+          {isSecondStep && (
+            <>
+              {/* Back Button */}
+              <button
+                type="button"
+                onClick={() => setIsSecondStep(false)}
+                className="mb-4 group cursor-pointer relative inline-flex items-center justify-center px-4 py-2 text-lg font-medium
+                       bg-gray-600 text-white rounded-xl transition-all duration-300
+                       hover:bg-gray-500 active:scale-95"
+              >
+                Back
+              </button>
+
+              {/* Delivery Options */}
+              <div className="mb-10">
+                <h3 className="text-gray-300 mb-5 text-lg font-medium">Deliver in</h3>
+                <div className="flex flex-wrap gap-4 mb-6">
+                  {deliveryOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedDate(option.id);
+                        if (option.id !== 'custom') {
+                          setCustomDate({ month: '', day: '', year: '' });
+                        }
+                      }}
+                      className={`px-4 cursor-pointer py-3 rounded-lg text-md md:text-lg font-medium transition-all duration-300
+                          ${selectedDate === option.id
+                          ? 'bg-gradient-to-r from-cyan-400 to-purple-500 text-gray-900'
+                          : 'bg-gray-900 text-gray-400 hover:bg-gray-700'
+                        }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom Date Dropdowns */}
+                {selectedDate === 'custom' && (
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Month Select */}
+                    <select
+                      value={customDate.month}
+                      onChange={(e) => handleDateChange('month', e.target.value)}
+                      className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+                             focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                             appearance-none cursor-pointer hover:bg-gray-800"
+                    >
+                      <option value="">Month</option>
+                      {months.map((month) => (
+                        <option key={month.value} value={month.value}>
+                          {month.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Day Select */}
+                    <select
+                      value={customDate.day}
+                      onChange={(e) => handleDateChange('day', e.target.value)}
+                      className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+                             focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                             appearance-none cursor-pointer hover:bg-gray-800"
+                    >
+                      <option value="">Day</option>
+                      {days.map((day) => (
+                        <option key={day} value={day}>
+                          {day}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Year Select */}
+                    <select
+                      value={customDate.year}
+                      onChange={(e) => handleDateChange('year', e.target.value)}
+                      className="bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+                             focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+                             appearance-none cursor-pointer hover:bg-gray-800"
+                    >
+                      <option value="">Year</option>
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Delivery Date Display */}
+              <div className="mb-10 p-6 bg-gray-900 rounded-xl border border-gray-700">
+                <div className="flex items-center text-gray-300">
+                  <svg className="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-lg">
+                    Delivery Date: {getDeliveryDate()}
+                  </span>
+                </div>
+              </div>
+
+              {currentUser && !isAnony ? (
+                <div className="flex items-center mb-10 space-x-2">
+                  <button
+                    onClick={(e) => { e.preventDefault(); setIsUserGhost(!isUserGhost) }}
+                    className={`relative w-12 h-6 flex items-center rounded-full transition duration-300 ${isUserGhost ? "bg-gray-600" : "bg-gray-400"}`}
+                  >
+                    <div
+                      className={`absolute w-5 h-5 bg-white rounded-full shadow-md transition-all duration-300 transform ${isUserGhost ? "translate-x-6" : "translate-x-1"}`}
+                    />
+                  </button>
+                  <span className="text-white text-lg">{isUserGhost ? "Send Anonymously" : `Send as ${currentUser?.displayName}`}</span>
+                </div>
+              ) : (<></>)}
+
+              {/* Send Button */}
+              <button
+                type="submit"
+                className="w-full group cursor-pointer relative inline-flex items-center justify-center px-8 py-5 text-xl font-medium
+                       bg-gradient-to-r from-cyan-400 to-purple-500 
+                       hover:from-purple-500 hover:to-cyan-400
+                       text-gray-900 rounded-xl transition-all duration-300
+                       hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]
+                       active:scale-95"
+              >
+                <span className="relative">Send to the Future</span>
+                {isLoading ? (
+                  <svg className="animate-spin ml-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg className="ml-3 w-6 h-6 transition-transform duration-300 group-hover:translate-x-1"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            )}
-          </button>
+                  </svg>
+                )}
+              </button>
+            </>
+          )}
         </form>
       </div>
     </div>
