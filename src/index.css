@@ -158,6 +158,6 @@ textarea::-webkit-scrollbar-thumb:hover {
   content: '';
   position: absolute;
   background: #1e2939;
-  border-radius: 1rem;
+  border-radius: 1.2rem;
   inset: 5px;
 }  

@@ -188,6 +188,7 @@ function MessageComposer() {
     if (todayDate === deliveryDate) {
       toast.error("Please select a date other than today.", {
         style: { backgroundColor: '#1f2937', color: '#ffffff' },
+        position: 'bottom-center',
       });
       setIsLoading(false);
       return;
@@ -197,6 +198,7 @@ function MessageComposer() {
     if (!email || !subject || !message || !selectedDate) {
       toast.error("Please fill in all fields.", {
         style: { backgroundColor: '#1f2937', color: '#ffffff' },
+        position: 'bottom-center',
       });
       setIsLoading(false);
       return;
@@ -207,6 +209,7 @@ function MessageComposer() {
     if (!emailPattern.test(email)) {
       toast.error("Please enter a valid email address.", {
         style: { backgroundColor: '#1f2937', color: '#ffffff' },
+        position: 'bottom-center',
       });
       setIsLoading(false);
       return;
@@ -255,6 +258,7 @@ function MessageComposer() {
       console.error("Error storing email: ", error);
       toast.error("Error in Spaceship. Please try again.", {
         style: { backgroundColor: '#1f2937', color: '#ffffff' },
+        position: 'bottom-center',
       });
       setIsLoading(false);
     }
@@ -354,6 +358,7 @@ function MessageComposer() {
                   if (!email || !subject || !message || !emailPattern.test(email)) {
                     toast.error("Please fill in all fields.", {
                       style: { backgroundColor: '#1f2937', color: '#ffffff' },
+                      position: 'bottom-center',
                     });
                   } else {
                     setIsSecondStep(true);
