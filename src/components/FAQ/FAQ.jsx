@@ -91,7 +91,9 @@ function FAQ() {
           <div className="inline-flex items-center p-2 bg-gray-800 rounded-xl">
             <span className="text-gray-400 px-6 text-lg">Still have questions?</span>
             <a 
-              href="https://www.facebook.com/shahariar.rijon.wd" 
+              href="https://m.me/shahariar.rijon.wd" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center px-8 py-3 text-lg font-medium
                 bg-gradient-to-r from-cyan-400 to-purple-500 
                 hover:from-purple-500 hover:to-cyan-400
