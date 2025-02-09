@@ -13,7 +13,7 @@ function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [emailToDelete, setEmailToDelete] = useState(null);
   const [showDelivered, setShowDelivered] = useState(false);
-
+  
   // Calculate emails due today and tomorrow
   const countDueToday = useMemo(() => {
     const today = new Date();
@@ -49,6 +49,10 @@ function AdminDashboard() {
   const filteredEmails = useMemo(() => {
     return emails.filter(email => showDelivered || email.status !== 'sent');
   }, [emails, showDelivered]);
+
+  const deliveredCount = useMemo(() => {
+    return emails.filter(email => email.status === 'sent').length;
+  }, [emails]);
 
   // Check if the current user is an admin by looking up a document
   // in the "admin" collection with the same UID.
@@ -142,7 +146,7 @@ function AdminDashboard() {
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-200">
-            All Emails - {emails.length}
+            Stats
           </h1>
           <div className="flex items-center gap-4">
             <button
@@ -151,17 +155,17 @@ function AdminDashboard() {
             >
               {showDelivered ? 'Hide Delivered' : 'Show Delivered'}
             </button>
-            <Link
+            {/* <Link
               to="/"
               className="inline-flex items-center px-3 py-3 text-lg font-medium bg-gradient-to-r from-cyan-400 to-purple-500 hover:from-purple-500 hover:to-cyan-400 text-gray-900 rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] active:scale-95"
             >
               Home
-            </Link>
+            </Link> */}
           </div>
         </div>
 
         <div className="bg-gray-800 p-6 rounded-xl mb-8">
-          <div className="flex gap-8">
+          <div className="grid md:grid-cols-4 grid-cols-2 gap-8">
             <div className="flex items-center gap-4">
               <span className="text-2xl font-bold text-purple-400">{countDueToday}</span>
               <span className="text-gray-300">Due Today</span>
@@ -169,6 +173,14 @@ function AdminDashboard() {
             <div className="flex items-center gap-4">
               <span className="text-2xl font-bold text-cyan-400">{countDueTomorrow}</span>
               <span className="text-gray-300">Due Tomorrow</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-2xl font-bold text-green-400">{deliveredCount}</span>
+              <span className="text-gray-300">Delivered</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-2xl font-bold text-purple-400">{emails.length}</span>
+              <span className="text-gray-300">Scheduled</span>
             </div>
           </div>
         </div>
