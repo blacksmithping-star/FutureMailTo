@@ -13,7 +13,8 @@ function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [emailToDelete, setEmailToDelete] = useState(null);
   const [showDelivered, setShowDelivered] = useState(false);
-  
+  const [lastTime, setLastTime] = useState(null);
+
   // Calculate emails due today and tomorrow
   const countDueToday = useMemo(() => {
     const today = new Date();
@@ -93,6 +94,15 @@ function AdminDashboard() {
           (a, b) => new Date(a.sendAt) - new Date(b.sendAt)
         );
         setEmails(sortedEmails);
+
+        // server time check
+        const serverTimeRef = doc(db, "server", "serverTime");
+        const serverTimeSnap = await getDoc(serverTimeRef);
+        if (serverTimeSnap.exists()) {
+          setLastTime(serverTimeSnap.data().lastUpdated.toDate());
+        } else {
+          setLastTime(null);
+        }
       } catch (error) {
         console.error('Error fetching emails:', error);
       } finally {
@@ -185,6 +195,20 @@ function AdminDashboard() {
           </div>
         </div>
 
+        <div className="text-center md:text-right mb-8">
+          <p className="text-md font-bold text-cyan-200">Last Server Time: <span className="text-md font-medium text-gray-300">{lastTime ? 
+          <span>{lastServerTime.toLocaleString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })}</span> : 'Not Available'}</span></p>
+          
+        </div>
+
         {/* Emails List */}
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -202,11 +226,10 @@ function AdminDashboard() {
                     {email.subject}
                   </h3> */}
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      email.status === 'scheduled'
-                        ? 'bg-purple-500/10 text-purple-400'
-                        : 'bg-green-500/10 text-green-400'
-                    }`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${email.status === 'scheduled'
+                      ? 'bg-purple-500/10 text-purple-400'
+                      : 'bg-green-500/10 text-green-400'
+                      }`}
                   >
                     {email.status === 'scheduled' ? 'Scheduled' : 'Delivered'}
                   </span>
