@@ -197,7 +197,7 @@ function AdminDashboard() {
 
         <div className="text-center md:text-right mb-8">
           <p className="text-md font-bold text-cyan-200">Last Server Time: <span className="text-md font-medium text-gray-300">{lastTime ? 
-          <span>{lastServerTime.toLocaleString("en-US", {
+          <span>{lastTime.toLocaleString("en-US", {
             year: "numeric",
             month: "short",
             day: "2-digit",
