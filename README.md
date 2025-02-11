@@ -1,11 +1,25 @@
+<a href="https://www.producthunt.com/posts/futuremailto?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-futuremailto" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=866949&theme=light&t=1739264470935" alt="FutureMailTo - Send&#0032;Emails&#0032;to&#0032;the&#0032;Future&#0032;&#0124;&#0032;Email&#0032;Scheduler | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 ## 🚀 Open-Source Project  
 This project is open-source and welcomes contributions! Feel free to explore, use, and contribute.  
  
 # ![Project Image](https://github.com/user-attachments/assets/11f93584-5133-4610-8c78-d3ca6c35fd4e)
 
+<div align="center">
+
 # FutureMailTo
 
-## What if you could write a letter today that arrives in 2035? Or send a heartfelt note to your future self on a milestone birthday? 🥺 FutureMailTo makes it possible!
+![GitHub Created At](https://img.shields.io/github/created-at/rijonshahariar/FutureMailTo)
+![GitHub repo size](https://img.shields.io/github/repo-size/rijonshahariar/FutureMailTo)
+![GitHub Discussions](https://img.shields.io/github/discussions/rijonshahariar/FutureMailTo)
+![GitHub License](https://img.shields.io/github/license/rijonshahariar/FutureMailTo)
+![GitHub forks](https://img.shields.io/github/forks/rijonshahariar/FutureMailTo?style=default)
+![GitHub stars](https://img.shields.io/github/stars/rijonshahariar/FutureMailTo?style=default)
+<br/>
+
+</div>
+
+What if you could write a letter today that arrives in 2035? Or send a heartfelt note to your future self on a milestone birthday? 🥺 FutureMailTo makes it possible! <br/>
 
 I built this little app where you can schedule emails to yourself or loved ones, years into the future. Think of it as a digital time capsule for your dreams, regrets, or hopes.
 
