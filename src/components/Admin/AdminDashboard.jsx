@@ -138,7 +138,7 @@ function AdminDashboard() {
         }
 
         const data = await response.json();
-        setUserCount(0);
+        setUserCount(data.userCount);
       } catch (err) {
         throw new Error("Failed to fetch user count");
       } finally {
