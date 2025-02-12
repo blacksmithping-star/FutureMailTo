@@ -14,6 +14,7 @@ function AdminDashboard() {
   const [emailToDelete, setEmailToDelete] = useState(null);
   const [showDelivered, setShowDelivered] = useState(false);
   const [lastTime, setLastTime] = useState(null);
+  const [userCount, setUserCount] = useState(null);
 
   // Calculate emails due today and tomorrow
   const countDueToday = useMemo(() => {
@@ -83,6 +84,7 @@ function AdminDashboard() {
   useEffect(() => {
     async function fetchEmails() {
       try {
+        setIsLoading(true);
         const emailsCollection = collection(db, 'emails');
         const querySnapshot = await getDocs(emailsCollection);
         const fetchedEmails = querySnapshot.docs.map((docSnap) => ({
@@ -116,6 +118,37 @@ function AdminDashboard() {
       setIsLoading(false);
     }
   }, [isAdmin]);
+
+  // Collects User Length
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        setIsLoading(true);
+        const apiSecretKey = import.meta.env.VITE_FIREBASE_API_KEY;
+        const response = await fetch("https://futuremail-server.vercel.app/api/usercounterserver", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${apiSecretKey}`,
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user count");
+        }
+
+        const data = await response.json();
+        setUserCount(0);
+      } catch (err) {
+        throw new Error("Failed to fetch user count");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserCount();
+  }, []);
+  
 
   // Function to delete an email.
   const handleDeleteEmail = async () => {
@@ -181,8 +214,8 @@ function AdminDashboard() {
               <span className="text-gray-300">Due Today</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-2xl font-bold text-cyan-400">{countDueTomorrow}</span>
-              <span className="text-gray-300">Due Tomorrow</span>
+              <span className="text-2xl font-bold text-cyan-400">{userCount}</span>
+              <span className="text-gray-300">Total Users</span>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-2xl font-bold text-green-400">{deliveredCount}</span>
