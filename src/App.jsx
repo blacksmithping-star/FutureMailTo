@@ -13,6 +13,7 @@ import MessageSection from './components/MessageSection'
 import SuccessPage from './components/MessageComposer/SuccessPage';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import Footer from './components/Footer/Footer';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
             </>} />
         </Routes>
       </AuthProvider>
+      <Analytics />
     </Router>
   )
 }
