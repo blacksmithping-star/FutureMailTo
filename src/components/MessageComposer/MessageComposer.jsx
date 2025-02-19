@@ -5,6 +5,7 @@ import { db } from '../../config/firebase';
 import { collection, addDoc } from "firebase/firestore";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import jsonData from './messages.json';
 
 function MessageComposer() {
   const { currentUser } = useAuth();
@@ -43,6 +44,13 @@ function MessageComposer() {
   const [customDate, setCustomDate] = useState(savedFormData.customDate);
   const isAnony = currentUser ? currentUser.isAnonymous : false;
   const [isUserGhost, setIsUserGhost] = useState(false);
+  const [msgIndex, setMsgIndex] = useState(0);
+
+  const handleNextMessage = () => {
+    const messagesArray = jsonData.messages;
+    setMessage(messagesArray[msgIndex].message);
+    setMsgIndex((prevIndex) => (prevIndex + 1) % messagesArray.length);
+  };
 
   // Calculate minimum and maximum dates
   const tomorrow = new Date();
@@ -333,7 +341,7 @@ function MessageComposer() {
               </div>
 
               {/* Message Textarea */}
-              <div className="mb-8">
+              <div className="mb-8 relative">
                 <label htmlFor="message" className="block text-gray-300 mb-3 text-lg font-medium">
                   Write Message
                 </label>
@@ -343,11 +351,20 @@ function MessageComposer() {
                   onChange={(e) => setMessage(e.target.value)}
                   rows="6"
                   className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
-                         focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
-                         placeholder-gray-500 resize-none"
+               focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300
+               placeholder-gray-500 resize-none"
                   placeholder="Dear Senorita..."
                 />
+                <button
+                  onClick={(e) => { e.preventDefault(); handleNextMessage(); }}
+                  className="absolute cursor-pointer top-12 right-2 bg-gray-800 border-2 border-gray-700 text-white text-2xl rounded-lg hover:bg-gray-700"
+                >
+                  ✨
+
+                </button>
+
               </div>
+
 
               {/* Next Button */}
               <button
