@@ -13,7 +13,7 @@ function Dashboard() {
     const isAnony = currentUser ? currentUser.isAnonymous : false;
 
     if (!currentUser) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/" replace />;
       }
 
     useEffect(() => {
@@ -31,6 +31,7 @@ function Dashboard() {
                 const sortedEmails = fetchedEmails.sort((a, b) => new Date(b.sendAt) - new Date(a.sendAt));
                 setEmails(sortedEmails);
             } catch (error) {
+                window.location.reload();
                 console.error("Error fetching emails: ", error);
             } finally {
                 setIsLoading(false);
