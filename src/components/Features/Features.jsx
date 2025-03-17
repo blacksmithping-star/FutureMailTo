@@ -18,7 +18,7 @@ function Features() {
   ];
 
   return (
-    <section className="py-32 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <section className="py-32 ">
       <div className="max-w-7xl mx-auto px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {features.map((feature, index) => (
