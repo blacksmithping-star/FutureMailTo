@@ -108,49 +108,50 @@ function UserProfile() {
           </div>
         </div> */}
 
-        <div className="grid grid-cols-3 xl:grid-cols-3 gap-4 px-4 py-4">
-          <div className="w-full flex flex-col items-center justify-center bg-gray-600 h-24 rounded-xl">
-            <p className="text-green-400 flex">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1792 1792" fill="currentColor" height="20" width="20">
-                <path d="M1408 1216q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45 19-45l448-448q19-19 45-19t45 19l448 448q19 19 19 45z">
-                </path>
-              </svg> 20%
-            </p>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 py-4">
+  <div className="w-full flex flex-col items-center justify-center bg-gray-600 h-24 rounded-xl">
+    <p className="text-green-400 flex">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1792 1792" fill="currentColor" height="20" width="20">
+        <path d="M1408 1216q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45 19-45l448-448q19-19 45-19t45 19l448 448q19 19 19 45z"></path>
+      </svg> 20%
+    </p>
 
-            <h1 className='text-3xl  font-bold text-gray-200'>
-              {userCount} USERS
-            </h1>
-          </div>
-          <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-800 rounded-xl col-span-2">
-            <img
-              src={isAnony ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTelZ7W2tOs5kd_GIOw595myZLLf4KBda-Q5w&s" : currentUser.photoURL}
-              alt={currentUser.displayName}
-              className="w-20 h-20 rounded-full shadow-xl"
-            />
-            <h1 className="text-3xl font-bold text-gray-200">
-              {isAnony ? "Anonymous User" : currentUser.displayName}
-            </h1>
-          </div>
-          <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-800 rounded-xl col-span-2">
-            <p className="text-xl text-gray-400">
-              UID: {isAnony ? currentUser.uid : currentUser.email}
-            </p>
-          </div>
-          <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-600 rounded-xl">
-            {location ? (
-              <div className='flex text-white flex-row gap-3 items-center justify-center'>
-                <div>
-                  <img src={location.country_flag} alt={location.country_name} width="50" />
-                </div>
-                <p>{location.country_code2}</p>
-              </div>
-            ) : (
-              <p>UNDEFINED</p>
-            )}
-          </div>
-          {/* <div className="w-full h-24 bg-blue-600 rounded-xl"></div>
-          <div className="w-full h-24 bg-blue-900 rounded-xl col-span-2"></div> */}
+    <h1 className='text-3xl font-bold text-gray-200'>
+      {userCount} USERS
+    </h1>
+  </div>
+
+  <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-800 rounded-xl md:col-span-2">
+    <img
+      src={isAnony ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTelZ7W2tOs5kd_GIOw595myZLLf4KBda-Q5w&s" : currentUser.photoURL}
+      alt={currentUser.displayName}
+      className="w-20 h-20 rounded-full shadow-xl"
+    />
+    <h1 className="text-3xl font-bold text-gray-200">
+      {isAnony ? "Anonymous User" : currentUser.displayName}
+    </h1>
+  </div>
+
+  <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-800 rounded-xl md:col-span-2">
+    <p className="text-xl text-gray-400">
+      UID: {isAnony ? currentUser.uid : currentUser.email}
+    </p>
+  </div>
+
+  <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-600 rounded-xl">
+    {location ? (
+      <div className='flex text-white flex-row gap-3 items-center justify-center'>
+        <div>
+          <img src={location.country_flag} alt={location.country_name} width="50" />
         </div>
+        <p>{location.country_code2}</p>
+      </div>
+    ) : (
+      <p>UNDEFINED</p>
+    )}
+  </div>
+</div>
+
         <a
           target='_blank'
           href="https://github.com/rijonshahariar/FutureMailTo"
