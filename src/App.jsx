@@ -14,6 +14,7 @@ import SuccessPage from './components/MessageComposer/SuccessPage';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import Footer from './components/Footer/Footer';
 import { Analytics } from "@vercel/analytics/react"
+import Review from './components/Review/Review';
 
 function App() {
   return (
@@ -26,13 +27,21 @@ function App() {
             <>
               <Navbar />
               <UserProfile />
-              <Footer/>
+              <Footer />
             </>
           } />
           <Route path="/dashboard" element={
             <>
               <Navbar />
               <Dashboard />
+              <Footer />
+            </>
+          } />
+
+          <Route path="/review" element={
+            <>
+              <Navbar />
+              <Review />
               <Footer/>
             </>
           } />
@@ -41,20 +50,20 @@ function App() {
               <Navbar />
               <div className="pt-40">
                 <MessageComposer />
-                <MessageSection/>
+                <MessageSection />
                 <Features />
                 <FAQ />
               </div>
-              <Footer/>
+              <Footer />
             </div>
           } />
-          <Route path="/admin" element={<><Navbar /><AdminDashboard /> <Footer/></>} />
+          <Route path="/admin" element={<><Navbar /><AdminDashboard /> <Footer /></>} />
           <Route path="/about" element={<About />} />
           <Route path="/success" element={<>
-              <Navbar />
-              <SuccessPage />
-              <Footer/>
-            </>} />
+            <Navbar />
+            <SuccessPage />
+            <Footer />
+          </>} />
         </Routes>
       </AuthProvider>
       <Analytics />

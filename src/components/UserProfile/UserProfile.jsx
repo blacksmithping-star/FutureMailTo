@@ -1,9 +1,9 @@
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffect, useState } from 'react';
 import { db } from '../../config/firebase'; // Adjust the path as necessary
-import { collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, addDoc } from "firebase/firestore";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 function UserProfile() {
   const { currentUser } = useAuth();
@@ -12,6 +12,11 @@ function UserProfile() {
   const [password, setPassword] = useState('');
   const isAnony = currentUser ? currentUser.isAnonymous : false;
   const [userCount, setUserCount] = useState(null);
+  const [isBirthdayModalOpen, setBirthdayModalOpen] = useState(false);
+  const [birthDate, setBirthDate] = useState('');
+  const [nextBirthdayDate, setNextBirthdayDate] = useState(() => {
+    return localStorage.getItem(`birthday_${currentUser.email}`) || '';
+  });
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
@@ -88,6 +93,56 @@ function UserProfile() {
   //   }
   // };
 
+  const handleBirthdayWish = async () => {
+    if (!birthDate) return;
+
+    try {
+      const birthdayDate = new Date(birthDate);
+      const currentYear = new Date().getFullYear();
+      
+      // Set delivery date to the same month and day but next year
+      const deliveryDate = new Date(birthdayDate);
+      deliveryDate.setFullYear(currentYear + 1);
+
+      const emailData = {
+        to: currentUser.email,
+        from: 'shahariar.rijon@gmail.com',
+        subject: `🎉 Happy Birthday ${currentUser.displayName}! 🎂`,
+        body: `Dear ${currentUser.displayName},\n\nWishing you a year filled with bold dreams, 
+        unstoppable energy, and endless joy! 
+        May you rise higher, shine brighter, and conquer every goal you set. 
+        You are an inspiration, and the world is better with you in it. 
+        Keep being amazing, keep chasing greatness, and 
+        never stop believing in yourself.
+        Here's to more success, happiness, 
+        and unforgettable adventures ahead! 🚀✨💙`,
+        sendAt: new Date(deliveryDate).toISOString(),
+        status: 'scheduled',
+        username: 'FutureMailTo'
+      };
+
+      await addDoc(collection(db, 'emails'), emailData);
+      
+      // Save to localStorage
+      localStorage.setItem(`birthday_${currentUser.email}`, deliveryDate.toISOString());
+      setNextBirthdayDate(deliveryDate.toISOString());
+      
+      setBirthdayModalOpen(false);
+    } catch (error) {
+      console.error('Error scheduling birthday wish:', error);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 pt-32">
       <div className="max-w-3xl mx-auto px-4">
@@ -148,6 +203,109 @@ function UserProfile() {
       </div>
     ) : (
       <p>UNDEFINED</p>
+    )}
+  </div>
+  <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-800 rounded-xl">
+    {isAnony ? (
+      <button
+        disabled
+        className="inline-flex bg-gray-700 justify-center items-center h-24 w-full px-6 py-3 text-lg font-medium
+          text-white rounded-xl transition-all duration-300
+          cursor-not-allowed filter blur-[1px] hover:blur-none
+          relative group"
+      >
+        <span className="relative">Sign in to Leave Review 🔒</span>
+        <div className="absolute inset-0 bg-black bg-opacity-20 rounded-xl 
+          opacity-0 group-hover:opacity-100 transition-opacity duration-300 
+          flex items-center justify-center">
+          <span className="text-white font-medium">Login Required</span>
+        </div>
+      </button>
+    ) : (
+      <Link 
+        to="/review" 
+        className="inline-flex bg-gradient-to-r from-cyan-400 to-purple-500 justify-center items-center h-24 w-full px-6 py-3 text-lg font-medium
+          text-white rounded-xl transition-all duration-300
+          hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]
+          active:scale-95"
+      >
+        <span className="relative">Leave a Review ✍️</span>
+      </Link>
+    )}
+  </div>
+
+  <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-600 rounded-xl md:col-span-2">
+    <button
+      onClick={() => setBirthdayModalOpen(true)}
+      disabled={isAnony || (nextBirthdayDate && new Date(nextBirthdayDate) > new Date())}
+      className={`inline-flex cursor-pointer w-full h-24 justify-center items-center px-6 py-3 text-lg font-medium
+        ${isAnony 
+          ? 'bg-gray-700 cursor-not-allowed filter blur-[1px] hover:blur-none transition-all'
+          : nextBirthdayDate && new Date(nextBirthdayDate) > new Date()
+            ? 'bg-gray-700 cursor-not-allowed'
+            : 'bg-gradient-to-r from-pink-500 to-purple-500 hover:from-purple-500 hover:to-pink-500 hover:shadow-[0_0_20px_rgba(219,39,119,0.3)]'
+        }
+        text-white rounded-xl transition-all duration-300
+        active:scale-95 relative group`}
+    >
+      <span className="relative flex items-center">
+        {isAnony 
+          ? 'Sign in to Get Birthday Wish 🔒'
+          : nextBirthdayDate && new Date(nextBirthdayDate) > new Date()
+            ? `Scheduled for ${formatDate(nextBirthdayDate)} 🎂`
+            : 'Get a Wish on Birthday 🎂'}
+      </span>
+      {isAnony && (
+        <div className="absolute inset-0 bg-black bg-opacity-20 rounded-xl 
+          opacity-0 group-hover:opacity-100 transition-opacity duration-300 
+          flex items-center justify-center">
+          <span className="text-white font-medium">Login Required</span>
+        </div>
+      )}
+    </button>
+
+    {/* Birthday Modal - only show if user is not anonymous */}
+    {!isAnony && isBirthdayModalOpen && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 border border-gray-700">
+          <h3 className="text-2xl font-bold text-gray-200 mb-6">
+            Get Surprise Birthday Wish
+          </h3>
+          <div className="mb-6">
+            <label className="block text-gray-300 mb-2 text-lg font-medium">
+              Your Birthday
+            </label>
+            <input
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg text-gray-300 
+                focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+            />
+          </div>
+          <div className="flex space-x-4">
+            <button
+              onClick={handleBirthdayWish}
+              disabled={!birthDate}
+              className="flex-1 inline-flex justify-center items-center px-6 py-3 text-lg font-medium
+                bg-gradient-to-r from-pink-500 to-purple-500 
+                hover:from-purple-500 hover:to-pink-500
+                text-white rounded-xl transition-all duration-300
+                hover:shadow-[0_0_20px_rgba(219,39,119,0.3)]
+                active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Confirm
+            </button>
+            <button
+              onClick={() => setBirthdayModalOpen(false)}
+              className="flex-1 px-6 py-3 text-lg font-medium text-gray-300 
+                bg-gray-700 hover:bg-gray-600 rounded-xl transition-all duration-300"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
     )}
   </div>
 </div>

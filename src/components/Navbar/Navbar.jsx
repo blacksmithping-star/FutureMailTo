@@ -94,7 +94,7 @@ function Navbar() {
                 setIsOpen(false);
               }}
             >
-              Profile
+             My Profile
             </Link>
             <button
               onClick={(e) => {
