@@ -189,7 +189,7 @@ function UserProfile() {
 
   <div className="w-full flex flex-row gap-3 items-center justify-center h-24 bg-gray-800 rounded-xl md:col-span-2">
     <p className="text-xl text-gray-400">
-      UID: {isAnony ? currentUser.uid : currentUser.email}
+      UID: {currentUser.uid}
     </p>
   </div>
 
