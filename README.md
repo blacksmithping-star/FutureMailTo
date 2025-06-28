@@ -1,8 +1,4 @@
-<div align="center">
-<!--  <a style="vertical-align: top;"  href="https://www.producthunt.com/posts/futuremailto?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-futuremailto" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=866949&theme=light&t=1739264470935" alt="FutureMailTo - Send&#0032;Emails&#0032;to&#0032;the&#0032;Future&#0032;&#0124;&#0032;Email&#0032;Scheduler | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a> -->
-
-<a href="https://bolt.new" target="_blank"><img src="https://github.com/user-attachments/assets/aa0fb210-300c-4c4d-be87-fd86b7eadf98" alt="" style="width: 250px; height: 80px;" width="250" height="54" /></a>
-</div>
+<a style="vertical-align: top;"  href="https://www.producthunt.com/posts/futuremailto?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-futuremailto" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=866949&theme=light&t=1739264470935" alt="FutureMailTo - Send&#0032;Emails&#0032;to&#0032;the&#0032;Future&#0032;&#0124;&#0032;Email&#0032;Scheduler | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 ## 🚀 Open-Source Project  
 This project is open-source and welcomes contributions! Feel free to explore, use, and contribute.  
